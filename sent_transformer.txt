@@ -1,0 +1,38 @@
+from transformers import AutoTokenizer, AutoModel
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+import torch
+
+# Load model and tokenizer from local path
+model_path = "C:\\Users\\pcmob\\Documents\\Codes\\Python\\models\\sentence-transformers\\all-MiniLM-L6-v2"
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+model = AutoModel.from_pretrained(model_path)
+
+# Input sentences
+text1 = "query resolved"
+text2 = "resolve query"
+
+def get_mean_embedding(text):
+    # Tokenize input with attention mask
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    token_embeddings = outputs.last_hidden_state.squeeze(0)  # shape: (seq_len, hidden_dim)
+    attention_mask = inputs["attention_mask"].squeeze(0)     # shape: (seq_len,)
+
+    # Apply attention mask to exclude [PAD] tokens
+    valid_tokens = token_embeddings[attention_mask.bool()]
+
+    # Mean pooling only on valid (non-padding) tokens
+    sentence_embedding = valid_tokens.mean(dim=0)
+    return sentence_embedding.numpy()
+
+# Get clean mean embeddings
+vec1 = get_mean_embedding(text1)
+vec2 = get_mean_embedding(text2)
+
+# Compute cosine similarity
+similarity = cosine_similarity([vec1], [vec2])[0][0]
+
+print(f"Cosine Similarity: {similarity:.4f}")
