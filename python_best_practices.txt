@@ -1,0 +1,787 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "06922b85",
+   "metadata": {},
+   "source": [
+    "# Python Coding Best Practices for Junior Developers\n",
+    "\n",
+    "This notebook is designed as a walkthrough for a junior developer audience. It covers practical Python coding habits that improve readability, maintainability, and reliability.\n",
+    "\n",
+    "---\n",
+    "\n",
+    "## Agenda\n",
+    "\n",
+    "1. Variable naming\n",
+    "2. Readability and coding standards\n",
+    "3. Function design\n",
+    "4. Class design\n",
+    "5. Commenting and docstrings\n",
+    "6. Error handling\n",
+    "7. Logging best practices\n",
+    "8. Refactoring: bad code to good code\n",
+    "9. Final checklist\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "36585855",
+   "metadata": {},
+   "source": [
+    "## 1. Variable Naming Best Practices\n",
+    "\n",
+    "Good variable names make code easier to understand without extra comments.\n",
+    "\n",
+    "### Guidelines\n",
+    "- Use **meaningful and descriptive** names\n",
+    "- Prefer **full words** over unclear abbreviations\n",
+    "- Use **snake_case** for variables and functions\n",
+    "- Name booleans like a question or condition:\n",
+    "  - `is_active`\n",
+    "  - `has_access`\n",
+    "  - `can_retry`\n",
+    "\n",
+    "### Goal\n",
+    "A developer should understand what a variable stores just by reading its name.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ed3c61c5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Poor naming\n",
+    "x = 120\n",
+    "n = \"John\"\n",
+    "flg = True\n",
+    "\n",
+    "print(x, n, flg)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dcd7289e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Better naming\n",
+    "timeout_seconds = 120\n",
+    "customer_name = \"John\"\n",
+    "is_active = True\n",
+    "\n",
+    "print(timeout_seconds, customer_name, is_active)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ff7db1de",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Collection naming examples\n",
+    "users = [\"Alice\", \"Bob\", \"Charlie\"]\n",
+    "active_users = [\"Alice\", \"Charlie\"]\n",
+    "user_count = len(users)\n",
+    "\n",
+    "print(\"Users:\", users)\n",
+    "print(\"Active users:\", active_users)\n",
+    "print(\"User count:\", user_count)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a53b7f67",
+   "metadata": {},
+   "source": [
+    "## 2. Readability and Coding Standards\n",
+    "\n",
+    "Readable code is easier to review, test, debug, and maintain.\n",
+    "\n",
+    "### Guidelines\n",
+    "- Keep code simple and explicit\n",
+    "- Use whitespace to separate logical steps\n",
+    "- Avoid deeply nested conditions where possible\n",
+    "- Replace magic values with named constants\n",
+    "- Follow **PEP 8** formatting conventions\n",
+    "- Prefer clarity over clever one-liners\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "49540a71",
+   "metadata": {},
+   "source": [
+    "### Example: unclear vs readable"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d8241ab8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def calc(a, b, c):\n",
+    "    if a > 0:\n",
+    "        if b > 0:\n",
+    "            return (a * b) - c\n",
+    "        else:\n",
+    "            return 0\n",
+    "    return 0\n",
+    "\n",
+    "print(calc(100, 2, 10))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ba454f5b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def calculate_discounted_value(price: float, quantity: int, discount: float) -> float:\n",
+    "    if price <= 0:\n",
+    "        return 0.0\n",
+    "\n",
+    "    if quantity <= 0:\n",
+    "        return 0.0\n",
+    "\n",
+    "    return (price * quantity) - discount\n",
+    "\n",
+    "\n",
+    "print(calculate_discounted_value(100.0, 2, 10.0))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "10e03837",
+   "metadata": {},
+   "source": [
+    "### Example: avoid magic numbers"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "40ea5cfa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Less clear\n",
+    "retries = 5\n",
+    "\n",
+    "if retries > 3:\n",
+    "    print(\"Too many retries\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2c041466",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Better\n",
+    "MAX_RETRIES = 3\n",
+    "retries = 5\n",
+    "\n",
+    "if retries > MAX_RETRIES:\n",
+    "    print(\"Too many retries\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "42bcbcf8",
+   "metadata": {},
+   "source": [
+    "## 3. Function Design Best Practices\n",
+    "\n",
+    "Functions should be easy to understand, easy to test, and focused on one job.\n",
+    "\n",
+    "### Guidelines\n",
+    "- A function should do **one thing well**\n",
+    "- Use descriptive function names\n",
+    "- Keep parameters explicit\n",
+    "- Return values instead of relying on side effects\n",
+    "- Add type hints where useful\n",
+    "- Validate inputs early\n",
+    "- Use docstrings for reusable functions\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "81174d49",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def do_stuff(x, y, z):\n",
+    "    return x * y + z\n",
+    "\n",
+    "print(do_stuff(10, 2, 5))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e8f35a8b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def calculate_total_price(unit_price: float, quantity: int, tax_rate: float) -> float:\n",
+    "    \"\"\"\n",
+    "    Calculate the final price including tax.\n",
+    "\n",
+    "    Args:\n",
+    "        unit_price: Price of one item.\n",
+    "        quantity: Number of items purchased.\n",
+    "        tax_rate: Tax rate as a decimal, such as 0.18 for 18%.\n",
+    "\n",
+    "    Returns:\n",
+    "        Final total including tax.\n",
+    "    \"\"\"\n",
+    "    subtotal = unit_price * quantity\n",
+    "    tax_amount = subtotal * tax_rate\n",
+    "    return subtotal + tax_amount\n",
+    "\n",
+    "\n",
+    "print(calculate_total_price(100.0, 3, 0.18))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "da772f6f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def divide_numbers(dividend: float, divisor: float) -> float:\n",
+    "    \"\"\"\n",
+    "    Divide two numbers safely.\n",
+    "\n",
+    "    Raises:\n",
+    "        ValueError: If divisor is zero.\n",
+    "    \"\"\"\n",
+    "    if divisor == 0:\n",
+    "        raise ValueError(\"Divisor cannot be zero.\")\n",
+    "\n",
+    "    return dividend / divisor\n",
+    "\n",
+    "\n",
+    "print(divide_numbers(10, 2))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bbbbd82d",
+   "metadata": {},
+   "source": [
+    "## 4. Class Design Best Practices\n",
+    "\n",
+    "Classes should model a clear concept and own a clear responsibility.\n",
+    "\n",
+    "### Guidelines\n",
+    "- A class should have **one clear purpose**\n",
+    "- Keep methods short and understandable\n",
+    "- Validate important state changes\n",
+    "- Avoid creating giant classes with unrelated responsibilities\n",
+    "- Use methods to protect and organize behavior\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "81ae9709",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class BankAccount:\n",
+    "    def __init__(self, account_holder: str, balance: float = 0.0) -> None:\n",
+    "        self.account_holder = account_holder\n",
+    "        self.balance = balance\n",
+    "\n",
+    "    def deposit(self, amount: float) -> None:\n",
+    "        if amount <= 0:\n",
+    "            raise ValueError(\"Deposit amount must be greater than zero.\")\n",
+    "        self.balance += amount\n",
+    "\n",
+    "    def withdraw(self, amount: float) -> None:\n",
+    "        if amount <= 0:\n",
+    "            raise ValueError(\"Withdrawal amount must be greater than zero.\")\n",
+    "        if amount > self.balance:\n",
+    "            raise ValueError(\"Insufficient balance.\")\n",
+    "        self.balance -= amount\n",
+    "\n",
+    "    def get_balance(self) -> float:\n",
+    "        return self.balance\n",
+    "\n",
+    "\n",
+    "account = BankAccount(\"Alice\", 1000.0)\n",
+    "account.deposit(250.0)\n",
+    "account.withdraw(100.0)\n",
+    "\n",
+    "print(account.account_holder)\n",
+    "print(account.get_balance())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9c7139e0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class DataManager:\n",
+    "    def save_file(self):\n",
+    "        pass\n",
+    "\n",
+    "    def send_email(self):\n",
+    "        pass\n",
+    "\n",
+    "    def calculate_salary(self):\n",
+    "        pass\n",
+    "\n",
+    "    def generate_report(self):\n",
+    "        pass\n",
+    "\n",
+    "    def connect_database(self):\n",
+    "        pass\n",
+    "\n",
+    "print(\"This is an example of a class with too many unrelated responsibilities.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a39e59ca",
+   "metadata": {},
+   "source": [
+    "## 5. Commenting and Docstring Best Practices\n",
+    "\n",
+    "Comments are useful when they add context that the code itself does not show.\n",
+    "\n",
+    "### Guidelines\n",
+    "- Prefer self-explanatory code first\n",
+    "- Use comments to explain **why**, not obvious **what**\n",
+    "- Use docstrings for functions, classes, and modules\n",
+    "- Keep comments updated when code changes\n",
+    "- Avoid noisy comments that repeat the code\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d37de3ab",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Bad comment: this repeats the code\n",
+    "counter = 0\n",
+    "counter += 1  # Increment counter by 1\n",
+    "\n",
+    "print(counter)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "650ffd48",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Good comment: this explains the reason\n",
+    "MAX_RETRIES = 3  # Prevents repeated calls from overwhelming the external API\n",
+    "\n",
+    "print(MAX_RETRIES)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cbb5700b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def send_welcome_email(email_address: str) -> None:\n",
+    "    \"\"\"\n",
+    "    Send a welcome email to a newly registered user.\n",
+    "\n",
+    "    Args:\n",
+    "        email_address: Recipient email address.\n",
+    "    \"\"\"\n",
+    "    print(f\"Sending welcome email to {email_address}\")\n",
+    "\n",
+    "\n",
+    "send_welcome_email(\"new.user@example.com\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e4be53bf",
+   "metadata": {},
+   "source": [
+    "## 6. Error Handling Best Practices\n",
+    "\n",
+    "Good error handling makes failures easier to understand and easier to debug.\n",
+    "\n",
+    "### Guidelines\n",
+    "- Catch only exceptions you can handle\n",
+    "- Avoid `except:` with no exception type\n",
+    "- Raise meaningful exceptions\n",
+    "- Include useful messages\n",
+    "- Validate user input and function input early\n",
+    "- Do not hide errors silently\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "12a355d2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Bad example\n",
+    "def unsafe_divide(total, count):\n",
+    "    try:\n",
+    "        return total / count\n",
+    "    except:\n",
+    "        return -1\n",
+    "\n",
+    "print(unsafe_divide(10, 0))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8d0cf401",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def calculate_ratio(total: float, count: int) -> float:\n",
+    "    if count == 0:\n",
+    "        raise ValueError(\"count must not be zero\")\n",
+    "\n",
+    "    return total / count\n",
+    "\n",
+    "\n",
+    "try:\n",
+    "    print(calculate_ratio(10, 0))\n",
+    "except ValueError as error:\n",
+    "    print(f\"Handled error: {error}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "dc612bd2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def parse_user_age(age_text: str) -> int:\n",
+    "    try:\n",
+    "        age = int(age_text)\n",
+    "    except ValueError as exc:\n",
+    "        raise ValueError(\"Age must be a valid integer.\") from exc\n",
+    "\n",
+    "    if age < 0:\n",
+    "        raise ValueError(\"Age cannot be negative.\")\n",
+    "\n",
+    "    return age\n",
+    "\n",
+    "\n",
+    "for sample in [\"25\", \"-3\", \"abc\"]:\n",
+    "    try:\n",
+    "        print(sample, \"->\", parse_user_age(sample))\n",
+    "    except ValueError as error:\n",
+    "        print(f\"Input {sample!r} failed: {error}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "27a93d56",
+   "metadata": {},
+   "source": [
+    "## 7. Logging Best Practices\n",
+    "\n",
+    "In real applications, prefer `logging` over `print()` for operational messages and diagnostics.\n",
+    "\n",
+    "### Why logging is better\n",
+    "- Supports log levels such as `DEBUG`, `INFO`, `WARNING`, and `ERROR`\n",
+    "- Can write to files, consoles, or external systems\n",
+    "- Helps with debugging in production environments\n",
+    "- Makes messages more structured and easier to filter\n",
+    "\n",
+    "### Guidelines\n",
+    "- Use the correct log level\n",
+    "- Log useful context\n",
+    "- Avoid logging secrets or sensitive personal data\n",
+    "- Keep messages clear and actionable\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fbf50b7e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import logging\n",
+    "\n",
+    "logging.basicConfig(\n",
+    "    level=logging.INFO,\n",
+    "    format=\"%(asctime)s - %(levelname)s - %(name)s - %(message)s\"\n",
+    ")\n",
+    "\n",
+    "logger = logging.getLogger(\"demo\")\n",
+    "\n",
+    "logger.info(\"Application started\")\n",
+    "logger.warning(\"Cache miss for user profile\")\n",
+    "logger.error(\"Failed to connect to database\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "99b10616",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import logging\n",
+    "\n",
+    "logger = logging.getLogger(\"config_loader\")\n",
+    "\n",
+    "def load_configuration(file_path: str) -> dict:\n",
+    "    logger.info(\"Loading configuration from %s\", file_path)\n",
+    "\n",
+    "    try:\n",
+    "        with open(file_path, \"r\", encoding=\"utf-8\") as file:\n",
+    "            content = file.read()\n",
+    "    except FileNotFoundError:\n",
+    "        logger.error(\"Configuration file not found: %s\", file_path)\n",
+    "        raise\n",
+    "\n",
+    "    logger.info(\"Configuration loaded successfully\")\n",
+    "    return {\"raw_content\": content}\n",
+    "\n",
+    "\n",
+    "try:\n",
+    "    load_configuration(\"missing_config.txt\")\n",
+    "except FileNotFoundError:\n",
+    "    print(\"Handled missing file for demo purposes.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d2f9896c",
+   "metadata": {},
+   "source": [
+    "## 8. Combined Example: Putting It All Together\n",
+    "\n",
+    "This example combines:\n",
+    "- meaningful naming\n",
+    "- class design\n",
+    "- docstrings\n",
+    "- validation\n",
+    "- logging\n",
+    "- readable code structure\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "42836bfe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import logging\n",
+    "\n",
+    "logger = logging.getLogger(\"salary_calculator\")\n",
+    "\n",
+    "class EmployeeSalaryCalculator:\n",
+    "    \"\"\"Calculate employee salary details.\"\"\"\n",
+    "\n",
+    "    TAX_RATE = 0.10\n",
+    "\n",
+    "    def __init__(self, employee_name: str, monthly_salary: float) -> None:\n",
+    "        self.employee_name = employee_name\n",
+    "        self.monthly_salary = monthly_salary\n",
+    "\n",
+    "    def calculate_net_salary(self) -> float:\n",
+    "        \"\"\"\n",
+    "        Calculate salary after tax deduction.\n",
+    "\n",
+    "        Returns:\n",
+    "            Net monthly salary after tax.\n",
+    "        \"\"\"\n",
+    "        if self.monthly_salary < 0:\n",
+    "            raise ValueError(\"Monthly salary cannot be negative.\")\n",
+    "\n",
+    "        tax_amount = self.monthly_salary * self.TAX_RATE\n",
+    "        net_salary = self.monthly_salary - tax_amount\n",
+    "\n",
+    "        logger.info(\"Calculated net salary for employee=%s\", self.employee_name)\n",
+    "        return net_salary\n",
+    "\n",
+    "\n",
+    "calculator = EmployeeSalaryCalculator(\"Ravi\", 5000.0)\n",
+    "print(\"Net salary:\", calculator.calculate_net_salary())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1b9876cc",
+   "metadata": {},
+   "source": [
+    "## 9. Refactoring Example: Before and After\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c8fabdd1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Before: hard to understand and maintain\n",
+    "def proc(d):\n",
+    "    try:\n",
+    "        if d[\"a\"] > 0:\n",
+    "            r = d[\"a\"] * 12\n",
+    "            print(\"ok\")\n",
+    "            return r\n",
+    "        else:\n",
+    "            return 0\n",
+    "    except:\n",
+    "        return -1\n",
+    "\n",
+    "print(proc({\"a\": 100}))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2bb9df07",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import logging\n",
+    "\n",
+    "logger = logging.getLogger(\"bonus_calculator\")\n",
+    "\n",
+    "def calculate_annual_bonus(employee_data: dict) -> float:\n",
+    "    \"\"\"\n",
+    "    Calculate annual bonus based on monthly amount.\n",
+    "\n",
+    "    Args:\n",
+    "        employee_data: Dictionary containing employee payment data.\n",
+    "\n",
+    "    Returns:\n",
+    "        Annual bonus amount.\n",
+    "\n",
+    "    Raises:\n",
+    "        KeyError: If 'monthly_bonus' is missing.\n",
+    "        ValueError: If monthly bonus is negative.\n",
+    "    \"\"\"\n",
+    "    monthly_bonus = employee_data[\"monthly_bonus\"]\n",
+    "\n",
+    "    if monthly_bonus < 0:\n",
+    "        raise ValueError(\"monthly_bonus cannot be negative\")\n",
+    "\n",
+    "    annual_bonus = monthly_bonus * 12\n",
+    "    logger.info(\"Calculated annual bonus successfully\")\n",
+    "    return annual_bonus\n",
+    "\n",
+    "\n",
+    "print(calculate_annual_bonus({\"monthly_bonus\": 100.0}))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e0eff081",
+   "metadata": {},
+   "source": [
+    "## 10. Final Checklist\n",
+    "\n",
+    "\n",
+    "### Checklist\n",
+    "- Use meaningful variable and function names\n",
+    "- Keep functions small and focused\n",
+    "- Prefer readable code over clever code\n",
+    "- Use constants instead of magic numbers\n",
+    "- Use docstrings for reusable functions and classes\n",
+    "- Comment the **why**, not the obvious **what**\n",
+    "- Validate inputs early\n",
+    "- Catch specific exceptions\n",
+    "- Use logging instead of `print()` in real applications\n",
+    "- Keep responsibilities clear in class design\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "777114ed",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "- Use meaningful names\n",
+      "- Keep functions focused\n",
+      "- Prefer readability over cleverness\n",
+      "- Use constants for magic values\n",
+      "- Write helpful docstrings\n",
+      "- Comment the why, not the obvious what\n",
+      "- Validate inputs early\n",
+      "- Catch specific exceptions\n",
+      "- Use logging in real applications\n",
+      "- Design classes with one clear responsibility\n"
+     ]
+    }
+   ],
+   "source": [
+    "best_practices_checklist = [\n",
+    "    \"Use meaningful names\",\n",
+    "    \"Keep functions focused\",\n",
+    "    \"Prefer readability over cleverness\",\n",
+    "    \"Use constants for magic values\",\n",
+    "    \"Write helpful docstrings\",\n",
+    "    \"Comment the why, not the obvious what\",\n",
+    "    \"Validate inputs early\",\n",
+    "    \"Catch specific exceptions\",\n",
+    "    \"Use logging in real applications\",\n",
+    "    \"Design classes with one clear responsibility\",\n",
+    "]\n",
+    "\n",
+    "for item in best_practices_checklist:\n",
+    "    print(\"-\", item)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
